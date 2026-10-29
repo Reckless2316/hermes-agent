@@ -1,0 +1,72 @@
+# Nous-approved MCP catalog entry.
+# Presence in this directory = approval. Merged via PR review.
+manifest_version: 1
+
+name: okx
+connector_slug: okx
+description: >-
+  OKX Agent Trade Kit: market data, account, positions, orders and bots on
+  OKX (global, EEA or US). Installed read-only.
+source: https://www.okx.com/docs-v5/agent_en/#introduction
+
+# Official OKX local MCP server (npm @okx_ai/okx-trade-mcp). OKX documents no
+# hosted endpoint yet, so Hermes runs it as a pinned stdio process.
+#
+# --read-only registers no order, transfer or bot write tools. To trade,
+# remove it with `hermes mcp configure okx` after testing against an OKX demo
+# key (OKX_DEMO=1).
+#
+# OKX_PILOT_BINARY_PATH points at a path that does not exist. That stops the
+# package from downloading and launching its okx-pilot native proxy, which
+# relays traffic through alternate nodes. Requests go directly to OKX.
+transport:
+  type: stdio
+  command: npx
+  args:
+    - "-y"
+    - "@okx_ai/okx-trade-mcp@1.4.8"
+    - "--read-only"
+  version: "1.4.8"
+  env:
+    OKX_SITE: "${OKX_SITE}"
+    OKX_API_KEY: "${OKX_API_KEY}"
+    OKX_SECRET_KEY: "${OKX_SECRET_KEY}"
+    OKX_PASSPHRASE: "${OKX_PASSPHRASE}"
+    OKX_PILOT_BINARY_PATH: /nonexistent/okx-pilot-disabled
+
+# Market data needs no key; the account and order tools need all three.
+auth:
+  type: api_key
+  env:
+    - name: OKX_SITE
+      prompt: "OKX site: global (www.okx.com), eea (my.okx.com) or us (OKX US)"
+      required: true
+      secret: false
+      default: global
+    - name: OKX_API_KEY
+      prompt: "OKX API key (Read only is enough; never enable Withdraw). Blank for market data only"
+      required: false
+    - name: OKX_SECRET_KEY
+      prompt: "OKX secret key (blank for market data only)"
+      required: false
+    - name: OKX_PASSPHRASE
+      prompt: "OKX API passphrase (blank for market data only)"
+      required: false
+
+suggest:
+  keywords:
+    - okx
+  hosts:
+    - okx.com
+
+post_install: |
+  The server runs read-only: market data, balances, positions, orders and
+  bot status, with no tool that can place orders, move funds or create bots.
+  Market data works without a key. For account tools, create a Read-only API
+  key on the site you chose (OKX US keys only work with site "us").
+  Never enable Withdraw permission.
+
+  OKX's agent skills complement this server. Install them with
+  `hermes skills install skills-sh/okx/agent-skills/okx-cex-market`
+  (also okx-cex-portfolio, okx-cex-trade, okx-cex-bot, okx-cex-earn).
+  Start a new session or use /reload-mcp after setup.

@@ -13,5 +13,8 @@ self-hosted-runner:
     - blacksmith-32vcpu-ubuntu-2404
     - blacksmith-32vcpu-ubuntu-2404-arm
     - blacksmith-32vcpu-windows-2025
+    # GitHub-hosted Windows ARM64 runner (free on public repos); newer than
+    # actionlint's built-in label list.
+    - windows-11-arm
     # GitHub larger runners still used by matrices not yet migrated.
     - windows-latest-32-arm-core

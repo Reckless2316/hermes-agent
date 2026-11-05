@@ -112,7 +112,7 @@ jobs:
   bundled-e2e:
     name: packaged bundle (open-app-update)
     if: inputs.install-method == 'packaged-app' && inputs.update-method == 'open-app-update'
-    runs-on: ${{ inputs.bundle-arch == 'arm64' && 'windows-latest-32-arm-core' || 'blacksmith-32vcpu-windows-2025' }}
+    runs-on: ${{ inputs.bundle-arch == 'arm64' && 'windows-11-arm' || 'windows-2025' }}
     timeout-minutes: ${{ inputs.timeout-minutes }}
     steps:
       - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a  # v1
@@ -184,7 +184,7 @@ jobs:
         || (contains(fromJSON('["installer-script+desktop", "hermes-desktop-app-update", "desktop-installer@latest"]'), inputs.update-method) && inputs.tag-has-desktop)
         || (inputs.update-method == 'open-app-update' && inputs.tag-has-desktop
             && contains(fromJSON('["desktop-installer@latest", "installer-script+desktop"]'), inputs.install-method)))
-    runs-on: blacksmith-32vcpu-windows-2025
+    runs-on: windows-2025
     timeout-minutes: ${{ inputs.timeout-minutes }}
 
     env:
